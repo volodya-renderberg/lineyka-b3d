@@ -1,0 +1,36 @@
+
+
+file_data = '''
+
+import bpy
+import json
+
+input_data = %s
+
+# this_path, save_path, group_name, actions
+
+def push():
+	scene = bpy.context.scene
+	
+	this_path = input_data['this_path']
+	save_path = input_data['save_path']
+	actions = input_data['actions']
+
+	# get list actions
+	list_actions = []
+	for key in actions:
+		list_actions.append(actions[key])
+		
+	# link group
+	with bpy.data.libraries.load(this_path, link=False) as (data_src, data_dst):
+		data_dst.actions = list_actions
+		
+	for action in bpy.data.actions:
+		action.use_fake_user = True
+
+	# -- save
+	bpy.ops.wm.save_as_mainfile(filepath = save_path, check_existing = True)
+
+push()
+
+'''
