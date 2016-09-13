@@ -51,13 +51,18 @@ class MainWindow(QtGui.QMainWindow):
 		'''
 		# test text
 		text = self.textBox.toPlainText()
-		text = text + '\n' + '>>> ' + 'text'
+		text = text + '\n' + '>>> ' + 'text.text'
 		self.textBox.setPlainText(text)
 		'''
 		self.run_chat_ui()
 		
 	def run_chat_ui(self):
 		chat_window = lineyka_chat.lineyka_chat(self)
+		
+		# test text
+		text = self.textBox.toPlainText()
+		text = text + '\n' + '>>> ' + str(chat_window)
+		self.textBox.setPlainText(text)
 		
 	#*********************** UTILITS *******************************************
 	def load_project_list(self): 

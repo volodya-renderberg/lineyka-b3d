@@ -323,17 +323,31 @@ class functional:
 		tmp_path = self.db_task.tmp_folder
 		path = bpy.data.filepath
 		
-		# get place file
+		# -- get tmp path
 		save_tmp_path = None
-		if os.path.normpath(os.path.dirname(path)) != os.path.normpath(tmp_path):
-			# resave
-			# -- new path
-			save_name = task_data['task_name'].replace(':','_', 2) + '_' + hex(random.randint(0, 1000000000)).replace('0x', '') + task_data['extension']
-			save_tmp_path = os.path.join(tmp_path, save_name)
+		if task_data['task_type'] not in ['location', 'animation_shot', 'tech_anim', 'simulation_din', 'render', 'composition']:
+			if os.path.normpath(os.path.dirname(path)) != os.path.normpath(tmp_path):
+				# resave
+				# -- new path
+				save_name = task_data['task_name'].replace(':','_', 2) + '_' + hex(random.randint(0, 1000000000)).replace('0x', '') + task_data['extension']
+				save_tmp_path = os.path.join(tmp_path, save_name)
+			else:
+				save_tmp_path = path
 		else:
 			save_tmp_path = path
-			
+				
 		# -- save to tmp
+		bpy.ops.wm.save_as_mainfile(filepath = save_tmp_path, check_existing = True)
+		
+		### ****** PRE PUSH ****** by ASSET_TYPE ******
+		if task_data['asset_type'] in ['obj', 'char']:
+			bpy.ops.file.make_paths_absolute()
+			
+			if task_data['activity'] == 'model':
+				for ob in bpy.data.objects:
+					ob.name = ob.name.replace('.','_')
+			
+		# -- save to tmp 
 		bpy.ops.wm.save_as_mainfile(filepath = save_tmp_path, check_existing = True)
 		
 		# ****** COPY to ACtTIVITY
@@ -342,11 +356,11 @@ class functional:
 			return(False, result[1])
 		new_dir_path, new_file_path = result[1]
 		
-		# make version folder
+		# -- make version folder
 		if not os.path.exists(new_dir_path):
 			os.mkdir(new_dir_path)
 		
-		# copy file
+		# -- copy file
 		shutil.copyfile(save_tmp_path, new_file_path)
 		
 		# ****** LOG
@@ -363,7 +377,7 @@ class functional:
 		if not result[0]:
 			return(False, result[1])
 			
-		### ****** by ASSET_TYPE ******
+		### ****** POST PUSH ****** by ASSET_TYPE ******
 		if task_data['asset_type'] == 'location':
 			json_path = os.path.join(task_data['asset_path'], self.db_task.additional_folders['meta_data'], self.db_task.location_position_file)
 			
@@ -404,99 +418,100 @@ class functional:
 			with open(json_path, 'w') as f:
 				jsn = json.dump(save_dict, f, sort_keys=True, indent=4)
 				
-		elif task_data['task_type'] == 'animation_shot':
-			json_path = os.path.join(task_data['asset_path'], self.db_task.additional_folders['meta_data'], self.db_task.location_position_file)
-			
-			if not os.path.exists(json_path):
+		elif task_data['asset_type'] in ['shot_animation', 'film']:
+			if task_data['task_type'] == 'animation_shot':
+				json_path = os.path.join(task_data['asset_path'], self.db_task.additional_folders['meta_data'], self.db_task.location_position_file)
+				
+				if not os.path.exists(json_path):
+					with open(json_path, 'w') as f:
+						jsn = json.dump({}, f)
+						
+				print(current_content_data)
+				#return(False, 'Ok!')
+						
+				# content list
+				content_asset_list = {}
+				if current_content_data:
+					for key in current_content_data:
+						if current_content_data[key][0]['type'] != 'location':
+							content_asset_list[current_content_data[key][0]['name']] = current_content_data[key][0]['type']
+				
+				# -- content list from text data block
+				if G.content_of_location in bpy.data.texts:
+					text = bpy.data.texts[G.content_of_location].as_string()
+					if text:
+						content_data = json.loads(text)
+						for key in content_data:
+							if content_data[key][0]['type'] != 'location':
+								content_asset_list[content_data[key][0]['name']] = content_data[key][0]['type']
+				
+				# get position
+				save_dict = {}
+				for obj_name in bpy.data.objects.keys():
+					asset_name = obj_name.split('.')[0]
+					if asset_name in content_asset_list:
+						obj = bpy.data.objects[obj_name]
+						if obj.dupli_group:
+							save_dict[obj_name] = (obj.location[:], obj.rotation_euler[:], obj.scale[:], obj.dupli_group.name, content_asset_list[asset_name])
+						else:
+							save_dict[obj_name] = (obj.location[:], obj.rotation_euler[:], obj.scale[:], obj.dupli_group, content_asset_list[asset_name])
+							
+				# save data
 				with open(json_path, 'w') as f:
-					jsn = json.dump({}, f)
+					jsn = json.dump(save_dict, f, sort_keys=True, indent=4)
+			
+			
+			elif task_data['task_type'] in ['animatic', 'film']:
+				# get comments
+				try:
+					text = bpy.data.texts[G.name_text]
+				except:
+					return(False, 'No text data block!')
+				try:
+					data = json.loads(text.as_string())
+				except:
+					return(False, 'No dictonary!')
 					
-			print(current_content_data)
-			#return(False, 'Ok!')
+				if 'shot_data' in data.keys():
+					shot_data = data['shot_data']
 					
-			# content list
-			content_asset_list = {}
-			if current_content_data:
-				for key in current_content_data:
-					if current_content_data[key][0]['type'] != 'location':
-						content_asset_list[current_content_data[key][0]['name']] = current_content_data[key][0]['type']
-			
-			# -- content list from text data block
-			if G.content_of_location in bpy.data.texts:
-				text = bpy.data.texts[G.content_of_location].as_string()
-				if text:
-					content_data = json.loads(text)
-					for key in content_data:
-						if content_data[key][0]['type'] != 'location':
-							content_asset_list[content_data[key][0]['name']] = content_data[key][0]['type']
-			
-			# get position
-			save_dict = {}
-			for obj_name in bpy.data.objects.keys():
-				asset_name = obj_name.split('.')[0]
-				if asset_name in content_asset_list:
-					obj = bpy.data.objects[obj_name]
-					if obj.dupli_group:
-						save_dict[obj_name] = (obj.location[:], obj.rotation_euler[:], obj.scale[:], obj.dupli_group.name, content_asset_list[asset_name])
-					else:
-						save_dict[obj_name] = (obj.location[:], obj.rotation_euler[:], obj.scale[:], obj.dupli_group, content_asset_list[asset_name])
-						
-			# save data
-			with open(json_path, 'w') as f:
-				jsn = json.dump(save_dict, f, sort_keys=True, indent=4)
-		
-		
-		elif task_data['task_type'] in ['animatic', 'film']:
-			# get comments
-			try:
-				text = bpy.data.texts[G.name_text]
-			except:
-				return(False, 'No text data block!')
-			try:
-				data = json.loads(text.as_string())
-			except:
-				return(False, 'No dictonary!')
+					for name in shot_data:
+						if not 'id' in shot_data[name].keys():
+							continue
+						if 'comment' in shot_data[name].keys():
+							comment = shot_data[name]['comment']
+						else:
+							comment = ''
+							
+						keys = {
+						'id': shot_data[name]['id'],
+						'type': shot_data[name]['type'],
+						'comment': comment
+						}
+						#
+						result = self.db_log.edit_asset_data_by_id( project, keys)
+						if not result[0]:
+							print(name,'save comment:', result[1])
+							
+			elif task_data['task_type'] in ['simulation_din', 'render']:
+				# this_file_name
+				this_path = bpy.context.blend_data.filepath
+				this_file_name = os.path.basename(this_path)
+				tmp_path = os.path.dirname(this_path)
 				
-			if 'shot_data' in data.keys():
-				shot_data = data['shot_data']
+				# get src_physics_dir
+				physics_dir_name = 'blendcache_' + this_file_name.replace('.blend', '')
+				src_physics_dir = os.path.normpath(os.path.join(tmp_path, physics_dir_name))
 				
-				for name in shot_data:
-					if not 'id' in shot_data[name].keys():
-						continue
-					if 'comment' in shot_data[name].keys():
-						comment = shot_data[name]['comment']
-					else:
-						comment = ''
-						
-					keys = {
-					'id': shot_data[name]['id'],
-					'type': shot_data[name]['type'],
-					'comment': comment
-					}
-					#
-					result = self.db_log.edit_asset_data_by_id( project, keys)
-					if not result[0]:
-						print(name,'save comment:', result[1])
-						
-		elif task_data['task_type'] in ['simulation_din', 'render']:
-			# this_file_name
-			this_path = bpy.context.blend_data.filepath
-			this_file_name = os.path.basename(this_path)
-			tmp_path = os.path.dirname(this_path)
-			
-			# get src_physics_dir
-			physics_dir_name = 'blendcache_' + this_file_name.replace('.blend', '')
-			src_physics_dir = os.path.normpath(os.path.join(tmp_path, physics_dir_name))
-			
-			# get dst_physics_dir
-			dst_physics_dir = os.path.normpath(os.path.join(new_dir_path, ('blendcache_' + task_data['asset'])))
-			
-			# copy dir
-			if os.path.exists(src_physics_dir):
-				print('**** Copy Physics!!!')
-				shutil.copytree(src_physics_dir, dst_physics_dir)
-			else:
-				return(False, ('No Copy Physics! No found cache files!!!'))
+				# get dst_physics_dir
+				dst_physics_dir = os.path.normpath(os.path.join(new_dir_path, ('blendcache_' + task_data['asset'])))
+				
+				# copy dir
+				if os.path.exists(src_physics_dir):
+					print('**** Copy Physics!!!')
+					shutil.copytree(src_physics_dir, dst_physics_dir)
+				else:
+					return(False, ('No Copy Physics! No found cache files!!!'))
 			
 						
 		return(True, new_file_path)
