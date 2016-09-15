@@ -3046,6 +3046,36 @@ class LINEYKA_report(bpy.types.Operator):
 	
 	def execute(self, context):
 		if self.action == 'report':
+			# *** PRE REPORT ***
+			if G.current_task['asset_type'] in ['obj', 'char'] and G.current_task['task_type'] in ['model', 'rig']:
+				res = G.db_task.get_final_file_path(G.current_project, G.current_task)
+				if not res[0]:
+					self.report({'WARNING'}, res[1])
+					return{'FINISHED'}
+				
+				if G.current_task['asset_type'] == 'obj' and G.current_task['task_type'] == 'model':
+					with bpy.data.libraries.load(res[1]) as (data_from, data_to):
+						bool_ = False
+						for mesh in data_from.meshes:
+							if mesh == G.current_task['asset']:
+								bool_ = True
+								break
+						if not bool_:
+							self.report({'WARNING'}, 'Not MESH with the name %s!' % G.current_task['asset'])
+							return{'FINISHED'}
+						
+				if G.current_task['asset_type'] == 'char':
+					with bpy.data.libraries.load(res[1]) as (data_from, data_to):
+						bool_ = False
+						for group in data_from.groups:
+							if group.split('.')[0] == G.current_task['asset']:
+								bool_ = True
+								break
+							
+						if not bool_:
+							self.report({'WARNING'}, 'Not GROUP with the name %s!' % G.current_task['asset'])
+							return{'FINISHED'}
+			
 			# get exists versions of activity
 			if not G.versions_list:
 				self.report({'WARNING'}, 'Not Exists Versions!')
