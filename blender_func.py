@@ -625,7 +625,8 @@ class functional:
 		# run chat
 		file_dir = None
 		for modul in addon_utils.modules():
-			if modul.__name__ == 'lineyka_b3d':
+			#print(modul.__name__)
+			if modul.__name__ in ['lineyka_b3d' , 'lineyka-b3d', 'lineyka-b3d-master']:
 				file_dir = os.path.dirname(modul.__file__)
 				break
 		
