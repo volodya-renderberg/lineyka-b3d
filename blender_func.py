@@ -636,7 +636,8 @@ class functional:
 			cmd = 'chmod +x \"' + file_path + '\"'
 			os.system(cmd)
 		
-		cmd = 'python \"' + file_path + '\"'
+		#cmd = 'python \"' + file_path + '\"'
+		cmd = 'start python \"%s\"' % file_path
 		os.system(cmd)
 			
 		return(True, 'Ok!')
@@ -3872,8 +3873,8 @@ class functional:
 	
 	def open_images(self, context, application, filepath):
 		
-		cmd = application +  ' \"' + filepath + '\"'
-		
+		#cmd = application +  ' \"' + filepath + '\"'
+		cmd = 'start %s \"%s\"' % (application, filepath)
 		os.system(cmd)
 		
 		return(True, 'Ok!')
