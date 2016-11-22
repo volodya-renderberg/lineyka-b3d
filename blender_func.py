@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import bpy
 import json
 import imp
@@ -2709,7 +2711,10 @@ class functional:
 		save_path = os.path.join(version_path, self.actions_file_name)
 		
 		# -- make string of data
-		data = "{'this_path': \'" + this_path + "\', 'save_path': \'" + save_path + "\', 'actions': " + actions + "}"
+		if platform.system() == 'Windows':
+			data = "{'this_path': %s, 'save_path': %s, 'actions': %s}" % (os.path.normpath(this_path.encode('unicode-escape')), os.path.normpath(save_path.encode('unicode-escape')), actions)
+		else:
+			data = "{'this_path': \'%s\', 'save_path': \'%s\', 'actions': %s}" % (this_path, save_path, actions)
 		
 		# -- save this file
 		bpy.ops.wm.save_as_mainfile(filepath = this_path, check_existing = True)
