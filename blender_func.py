@@ -1950,22 +1950,34 @@ class functional:
 		for task_name in current_content_data:
 			if current_content_data[task_name][0]['type'] == 'location':
 				location_task_data = current_content_data[task_name][1]
-
+		
 		if not location_task_data:
-			return(False, 'Not Input Tasks!')
+			return(False, '*Not Input Tasks!')
 
 		# get 
 		result = self.db_task.get_list(project_name, location_task_data['asset_id'])
 		if not result[0]:
 			return(False, result[1])
-			
+		
 		for row in result[1]:
+			'''
 			if row['task_name'] == location_task_data['input']:
 				location_input_task_list = json.loads(row['input'])
 				break
+			'''
+			try:
+				input = json.loads(row['input'])
+			except Exception as e:
+				print('*'*10, row['input'], e)
+				continue
+			if input:
+				for task_name in input:
+					if not task_name.split(':')[0] == row['asset'] and not task_name in location_input_task_list:
+						location_input_task_list.append(task_name)
+		#print('#'*10, location_input_task_list)
 
 		if not location_input_task_list:
-			return(False, 'Not Input Tasks!')
+			return(False, '**Not Input Tasks!')
 			
 		# get loacation content data
 		location_content_data = self.location_get_content_data(project_name, location_input_task_list)
