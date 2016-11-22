@@ -1718,6 +1718,9 @@ class asset(project):
 					# series
 					task_['series'] = keys['series']
 					
+					# readers
+					task_['readers'] = "{}"
+					
 					# append task
 					this_asset_tasks.append(task_)
 					
@@ -1913,6 +1916,8 @@ class asset(project):
 				continue
 			
 			# exceptions ['textures','cache']
+			numbers = []
+			int_hex = {}
 			
 			if key == 'textures' or (key == 'cache' and new_asset_type == 'char'):
 				src_activity_path = src_activity_dir
@@ -1921,8 +1926,8 @@ class asset(project):
 					os.mkdir(dst_activity_path)
 				
 			else:
-				numbers = []
-				int_hex = {}
+				#numbers = []
+				#int_hex = {}
 				for version in versions:
 					num = int(version, 16)
 					numbers.append(num)
@@ -1947,10 +1952,10 @@ class asset(project):
 				dst = os.path.normpath(os.path.join(dst_activity_path, obj.replace(old_name, new_asset_name)))
 				if os.path.isfile(src):
 					shutil.copyfile(src, dst)
-					print(int_hex[str(max(numbers))], obj)
+					#print(int_hex[str(max(numbers))], obj)
 				elif os.path.isdir(src):
 					shutil.copytree(src, dst)
-					print(int_hex[str(max(numbers))], obj)
+					#print(int_hex[str(max(numbers))], obj)
 		
 		# copy preview image
 		img_folder_path = os.path.normpath(os.path.join(self.path, self.folders['preview_images']))
@@ -3819,7 +3824,8 @@ class task(asset):
 			for row in c.fetchall():
 				if row['task_name'] == task_data['task_name']:
 					try:
-						readers_dict = json.loads(row['readers'])
+						if json.loads(row['readers']):
+							readers_dict = json.loads(row['readers'])
 					except:
 						pass
 					if row['status'] == 'done':
@@ -3828,6 +3834,11 @@ class task(asset):
 		except:
 			conn.close()
 			return(False, ('in task().add_readers Not Table! - ' + table))
+		
+		###
+		#print(add_readers_list)
+		#return(False, '***')
+		###
 		
 		for artist_name in add_readers_list:
 			readers_dict[artist_name] = 0
@@ -4094,7 +4105,10 @@ class task(asset):
 		# -- in new input
 		list_output_new = None
 		if new_input_task_data:
-			list_output_new = json.loads(new_input_task_data['output'])
+			if not new_input_task_data['output']:
+				list_output_new = []
+			else:
+				list_output_new = json.loads(new_input_task_data['output'])
 			list_output_new.append(task_data['task_name'])
 			list_output_new = json.dumps(list_output_new)
 				
@@ -4730,7 +4744,7 @@ class task(asset):
 						
 					for td in rows:
 						if td['activity'] == activity:
-							if td_dict[td['input']]['activity'] != activity:
+							if not dict(td).get('input') or td_dict[td['input']]['activity'] != activity:
 								final_tasks_list.append(td)
 			
 			else:
