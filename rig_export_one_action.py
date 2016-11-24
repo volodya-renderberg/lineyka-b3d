@@ -1,9 +1,10 @@
 
 
 file_data = '''
-
+# -*- coding: utf-8 -*-
 import bpy
 import json
+import platform
 
 input_data = %s
 
@@ -12,10 +13,15 @@ input_data = %s
 def push():
 	scene = bpy.context.scene
 	
-	this_path = input_data['this_path']
-	save_path = input_data['save_path']
-	action = input_data['action']
-
+	if platform.system() == 'Windows':
+		this_path = str(input_data['this_path'], "utf-8")
+		save_path = str(input_data['save_path'], "utf-8")
+		action = input_data['action']
+	else:
+		this_path = input_data['this_path']
+		save_path = input_data['save_path']
+		action = input_data['action']
+	
 	# get list actions
 	list_actions = [action]
 	

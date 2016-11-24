@@ -2384,7 +2384,11 @@ class functional:
 							print('path: ', save_path)
 							
 							# -- make string of data
-							data = "{'this_path': \'" + this_path + "\', 'save_path': \'" + save_path + "\', 'action': \'" + action.name + "\'}"
+							#data = "{'this_path': \'" + this_path + "\', 'save_path': \'" + save_path + "\', 'action': \'" + action.name + "\'}"
+							if platform.system() == 'Windows':
+								data = "{'this_path': %s, 'save_path': %s, 'action': \'%s\'}" % (os.path.normpath(this_path.encode('unicode-escape')), os.path.normpath(save_path.encode('unicode-escape')), action.name)
+							else:
+								data = "{'this_path': \'%s\', 'save_path': \'%s\', 'action': \'%s\'}" % (this_path, save_path, action.name)
 							
 							# -- save this file
 							bpy.ops.wm.save_as_mainfile(filepath = this_path, check_existing = True)
