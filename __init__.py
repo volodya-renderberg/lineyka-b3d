@@ -8,7 +8,7 @@ bl_info = {
 	"description": "Production manager: tasks , assets , outsource",
 	"author": "Volodya Renderberg",
 	"version": (1, 0),
-	"blender": (2, 76, 0),
+	"blender": (2, 78, 0),
 	"location": "View3d tools, ui panels",
 	"warning": "", # used for warning icon and text in addons panel
 	"category": "User"}

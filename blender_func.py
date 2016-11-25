@@ -2107,8 +2107,11 @@ class functional:
 		end = str(context.scene.frame_end)
 		
 		# make string of data
-		data = "{'this_path': \'" + this_path + "\', 'save_path': \'" + save_path + "\', 'group': \'" + group_name + "\', 'actions': " + actions + ",'start': " + start + ", 'end': " + end + "}"
-		#string = json.dumps(data)
+		#data = "{'this_path': \'" + this_path + "\', 'save_path': \'" + save_path + "\', 'group': \'" + group_name + "\', 'actions': " + actions + ",'start': " + start + ", 'end': " + end + "}"
+		if platform.system() == 'Windows':
+			data = "{'this_path': %s, 'save_path': %s, 'group': \'%s\', 'actions': %s, 'start': %s, 'end': %s}" % (os.path.normpath(this_path.encode('unicode-escape')), os.path.normpath(save_path.encode('unicode-escape')), group_name, actions, start, end)
+		else:
+			data = "{'this_path': \'%s\', 'save_path': \'%s\', 'group': \'%s\', 'actions': %s,  'start': %s, 'end': %s}" % (this_path, save_path, group_name, actions, start, end)
 		
 		# ******* SAVE ******* 
 		bpy.ops.wm.save_as_mainfile(filepath = this_path, check_existing = True)
@@ -2185,7 +2188,7 @@ class functional:
 						bpy.ops.object.mode_set(mode='OBJECT')
 						scene.objects.unlink(ob)
 				try:
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink = True)
 				except:
 					ob.name = 'deleted'
 				
@@ -2196,12 +2199,12 @@ class functional:
 						action = bpy.data.actions[action_name]
 						action.name = action_name + '.removed'
 						try:
-							bpy.data.actions.remove(action)
+							bpy.data.actions.remove(action, do_unlink = True)
 						except:
 							pass
 						
 			# remove group
-			bpy.data.groups.remove(cam_group)
+			bpy.data.groups.remove(cam_group, do_unlink = True)
 					
 		# -- load camera
 		actions = group_actions
@@ -2232,7 +2235,7 @@ class functional:
 		context.scene.frame_end = cam_data['end']
 		
 		# -- -- remove text
-		bpy.data.texts.remove(text)
+		bpy.data.texts.remove(text, do_unlink = True)
 		
 		return(True, 'Ok!')
 		
