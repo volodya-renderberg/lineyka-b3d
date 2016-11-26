@@ -1493,8 +1493,8 @@ class FUNCTIONAL_playblast(bpy.types.Panel):
 	
 	@classmethod
 	def poll(self, context):
-		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din']
-		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din']
+		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim']
+		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim']
 		
 		if BOOL_work or BOOL_read:
 			return True
@@ -2065,8 +2065,8 @@ class FUNCTIONAL_edit_camera(bpy.types.Panel):
 	
 	@classmethod
 	def poll(self, context):
-		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'render']
-		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'render']
+		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'tech_anim', 'simulation_din', 'render']
+		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'tech_anim', 'simulation_din', 'render']
 		
 		if BOOL_work or BOOL_read:
 			return True
@@ -3730,14 +3730,14 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 			return{'FINISHED'}
 
 		name = scene.name
-		bpy.data.scenes.remove(scene)
+		bpy.data.scenes.remove(scene, do_unlink=True)
 			
 		# CAMERA
 		if name in bpy.data.objects.keys():
 			camera = bpy.data.objects[name]
 			camera.name = name + '.removed'
 			camera.data.name = name + '.removed'
-			bpy.data.objects.remove(camera)
+			bpy.data.objects.remove(camera, do_unlink=True)
 		
 		# BG
 		bg_name = (name + '.bg')
@@ -3745,7 +3745,7 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 			bg = bpy.data.objects[bg_name]
 			bg.name = bg_name + '.removed'
 			bg.data.name = bg_name + '.removed'
-			bpy.data.objects.remove(bg)
+			bpy.data.objects.remove(bg, do_unlink=True)
 			
 		# SEQUENCE
 		#sequence = context.scene.sequence_editor.active_strip
@@ -3757,7 +3757,7 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 			pen.clear()
 			pen.name = name + '.removed'
 			try:
-				bpy.data.grease_pencil.remove(pen)
+				bpy.data.grease_pencil.remove(pen, do_unlink=True)
 			except:
 				pass
 		
@@ -4592,7 +4592,7 @@ class LINEYKA_remove_group(bpy.types.Operator):
 	def execute(self, context):
 		if self.removable_group in bpy.data.groups.keys():
 			group = bpy.data.groups[self.removable_group]
-			bpy.data.groups.remove(group)
+			bpy.data.groups.remove(group, do_unlink=True)
 		else:
 			self.report({}, ('No Found Group: ' + self.removable_group))
 		return{'FINISHED'}

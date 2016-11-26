@@ -168,7 +168,7 @@ class functional:
 				for scene in bpy.data.scenes:
 					if ob.name in scene.objects.keys():
 						scene.objects.unlink(ob)
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 	
 	def open_change_status(self,project, current_task, task_dict): # task_dict = dict{task_name:{'task': task_data, 'input': input_task_data}, ... }
 		change_statuses = [(current_task, 'work'),]
@@ -826,7 +826,7 @@ class functional:
 								scene.objects.unlink(bpy.data.objects[key])
 							except:
 								continue
-							bpy.data.objects.remove(bpy.data.objects[key])
+							bpy.data.objects.remove(bpy.data.objects[key], do_unlink=True)
 								
 					# -- make object
 					obj = bpy.data.objects.new(key, mesh)
@@ -1166,7 +1166,7 @@ class functional:
 						scene.objects.unlink(bpy.data.objects[ob.name])
 					except:
 						continue
-				bpy.data.objects.remove(bpy.data.objects[ob.name])
+				bpy.data.objects.remove(bpy.data.objects[ob.name], do_unlink=True)
 				
 				
 		for mesh in bpy.data.meshes:
@@ -1203,14 +1203,14 @@ class functional:
 						bpy.ops.object.mode_set(mode = 'OBJECT')
 						scene.objects.unlink(proxy)
 				
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 				if proxy:
-					bpy.data.objects.remove(proxy)
+					bpy.data.objects.remove(proxy, do_unlink=True)
 					
 		for grp in bpy.data.groups:
 			#name = grp.name
 			if asset_name == grp.name.split('.')[0]:
-				bpy.data.groups.remove(grp)
+				bpy.data.groups.remove(grp, do_unlink=True)
 			
 		return(True, 'Ok!')
 		
@@ -3027,11 +3027,11 @@ class functional:
 				ob.parent = None
 				ob.name = 'removed'
 				try:
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 				except:
 					pass
 		# clear group
-		bpy.data.groups.remove(group)
+		bpy.data.groups.remove(group, do_unlink=True)
 		
 		# clear root
 		if asset_data['name'] in bpy.data.objects:
@@ -3039,7 +3039,7 @@ class functional:
 			for scene in bpy.data.scenes:
 				scene.objects.unlink(empty)
 			try:
-				bpy.data.objects.remove(empty)
+				bpy.data.objects.remove(empty, do_unlink=True)
 			except:
 				pass
 		
@@ -3429,7 +3429,7 @@ class functional:
 						if asset_name in text:
 							texts.append(text)
 							if text in bpy.data.texts.keys():
-								bpy.data.texts.remove(bpy.data.texts[text])
+								bpy.data.texts.remove(bpy.data.texts[text], do_unlink=True)
 					if texts:
 						data_dst.texts = texts
 						
@@ -3474,7 +3474,7 @@ class functional:
 							if asset_name in text:
 								texts.append(text)
 								if text in bpy.data.texts.keys():
-									bpy.data.texts.remove(bpy.data.texts[text])
+									bpy.data.texts.remove(bpy.data.texts[text], do_unlink=True)
 						if texts:
 							data_dst.texts = texts
 						
@@ -3575,7 +3575,7 @@ class functional:
 							if asset_name in text:
 								texts.append(text)
 								if text in bpy.data.texts.keys():
-									bpy.data.texts.remove(bpy.data.texts[text])
+									bpy.data.texts.remove(bpy.data.texts[text], do_unlink=True)
 						if texts:
 							data_dst.texts = texts
 						
@@ -3659,7 +3659,7 @@ class functional:
 				for scene in bpy.data.scenes:
 					scene.objects.unlink(ob)
 				ob.name = 'removed'
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 				
 				# make original
 				root_ob = bpy.data.objects.new(ob_name, None)
@@ -3694,7 +3694,7 @@ class functional:
 				for scene in bpy.data.scenes:
 					scene.objects.unlink(ob)
 				ob.name = 'removed'
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 				
 				# make original
 				root_ob = bpy.data.objects.new(ob_name, None)
@@ -3745,7 +3745,7 @@ class functional:
 				for scene in bpy.data.scenes:
 					scene.objects.unlink(ob)
 				ob.name = 'removed'
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 				
 				# make instance
 				root_ob = bpy.data.objects.new(ob_name, None)
@@ -3777,7 +3777,7 @@ class functional:
 				for scene in bpy.data.scenes:
 					scene.objects.unlink(ob)
 				ob.name = 'removed'
-				bpy.data.objects.remove(ob)
+				bpy.data.objects.remove(ob, do_unlink=True)
 				
 				# make instance
 				root_ob = bpy.data.objects.new(ob_name, None)
@@ -3817,7 +3817,7 @@ class functional:
 				ob.name = 'removed'
 				
 				try:
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 				except:
 					print(('Failed to remove a: ' + key))
 		
@@ -3839,7 +3839,7 @@ class functional:
 					for scene in bpy.data.scenes:
 						scene.objects.unlink(ob)
 					ob.name = 'removed'
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 				else:
 					# remove original
 					# -- unparent content
@@ -3856,7 +3856,7 @@ class functional:
 					for scene in bpy.data.scenes:
 						scene.objects.unlink(ob)
 					ob.name = 'removed'
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 				
 			elif ob_data[key]['model_path']:
 				ob = bpy.data.objects[key]
@@ -3865,7 +3865,7 @@ class functional:
 					for scene in bpy.data.scenes:
 						scene.objects.unlink(ob)
 					ob.name = 'removed'
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 				else:
 					# remove original
 					# -- unparent content
@@ -3882,7 +3882,7 @@ class functional:
 					for scene in bpy.data.scenes:
 						scene.objects.unlink(ob)
 					ob.name = 'removed'
-					bpy.data.objects.remove(ob)
+					bpy.data.objects.remove(ob, do_unlink=True)
 		
 		
 		return(True, 'Ok!')
