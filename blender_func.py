@@ -1876,8 +1876,11 @@ class functional:
 				read.close()
 		else:
 			print('*** Not Found MetaData File!')
-				
-				
+		
+		# *** Reload Animatik ***
+		if 	task_data['task_type'] in ["render", 'composition']:
+			return(True, 'Ok!')
+		
 		# -- get animatic_path
 		animatic_path = os.path.normpath(os.path.join(asset_path, self.db_task.activity_folder['film']['animatic'], (task_data['asset'] + '.avi')))
 		
