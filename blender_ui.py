@@ -12,6 +12,7 @@ from .edit_db import studio
 from .edit_db import artist
 from .edit_db import task
 from .edit_db import log
+from .edit_db import chat
 from .edit_db import group
 from .edit_db import asset
 from .edit_db import set_of_tasks
@@ -24,6 +25,7 @@ class G(object):
 	db_artist = artist()
 	db_task = task()
 	db_log = log()
+	db_chat = chat()
 	db_group = group()
 	db_asset = asset()
 	db_set_of_tasks = set_of_tasks()
@@ -3717,7 +3719,7 @@ class LINEYKA_add_shot(bpy.types.Operator):
 		
 class LINEYKA_remove_shot(bpy.types.Operator):
 	bl_idname = "lineyka.remove_shot"
-	bl_label = "Remove Shot?"
+	bl_label = "Delete the Shot and Asset of this Shot forever?"
 	
 	@classmethod
 	def poll(self, context):
@@ -3792,6 +3794,12 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 				bpy.data.grease_pencil.remove(pen, do_unlink=True)
 			except:
 				pass
+		
+		# ASSET
+		if name in G.all_assets_data_by_name:
+			result = G.db_chat.remove_asset(G.current_project, G.all_assets_data_by_name[name])
+			if not result[0]:
+				self.report({'WARNING'}, result[1])
 		
 		return{'FINISHED'}
 		
