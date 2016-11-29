@@ -3730,7 +3730,7 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 			return(False)
 	
 	def execute(self, context):
-		# SCENE
+		# Get Shot name
 		scene = None
 		try:
 			scene = context.scene.sequence_editor.active_strip.scene
@@ -3739,8 +3739,29 @@ class LINEYKA_remove_shot(bpy.types.Operator):
 		if not scene:
 			self.report({'WARNING'}, 'Not Selected Sequence!')
 			return{'FINISHED'}
-
 		name = scene.name
+		
+		# TEXT
+		try:
+			text = bpy.data.texts[G.name_text]
+		except:
+			self.report({'WARNING'}, 'No text data block!')
+			return{'FINISHED'}
+			
+		try:
+			data = json.loads(text.as_string())
+		except:
+			self.report({'WARNING'}, 'No dictonary!')
+			return{'FINISHED'}
+		
+		shot_data = {}
+		if 'shot_data' in data.keys():
+			shot_data = data['shot_data']
+			del shot_data[name]
+			text.clear()
+			text.write(json.dumps(data, sort_keys=True, indent=4))
+			
+		# SCENE
 		bpy.data.scenes.remove(scene, do_unlink=True)
 			
 		# CAMERA
