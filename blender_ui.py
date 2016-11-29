@@ -3656,6 +3656,9 @@ class LINEYKA_add_shot(bpy.types.Operator):
 	
 	def execute(self, context):
 		# add shot
+		if self.shot_name in G.all_assets_data_by_name:
+			self.report({'WARNING'}, 'Asset witn name "%s" already exists! Series name should be different from the existing Asset!' % self.shot_name)
+			return{'FINISHED'}
 		result = G.func.add_shot(context, self.shot_name, self.lenth_frame)
 		if not result[0]:
 			self.report({'WARNING'}, result[1])
@@ -3794,6 +3797,10 @@ class LINEYKA_rename_shot(bpy.types.Operator):
 		# test changed name
 		if self.new_name == self.old_name:
 			self.report({'WARNING'}, 'The name is not changed!')
+			return{'FINISHED'}
+			
+		if self.new_name in G.all_assets_data_by_name:
+			self.report({'WARNING'}, 'Asset witn name "%s" already exists! Series name should be different from the existing Asset!' % self.new_name)
 			return{'FINISHED'}
 			
 		# test op
