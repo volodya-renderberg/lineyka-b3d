@@ -3800,7 +3800,8 @@ class LINEYKA_rename_shot(bpy.types.Operator):
 		except:
 			self.report({'WARNING'}, 'No dictonary!')
 			return{'FINISHED'}
-			
+		
+		shot_data = {}	
 		if 'shot_data' in data.keys():
 			shot_data = data['shot_data']
 			if self.old_name in shot_data.keys():
@@ -3810,7 +3811,7 @@ class LINEYKA_rename_shot(bpy.types.Operator):
 							return{'FINISHED'}
 							
 		# TEXT data block
-		if self.old_name in shot_data.keys():
+		if shot_data and self.old_name in shot_data.keys():
 			data_ = shot_data[self.old_name]
 			del shot_data[self.old_name]
 			shot_data[self.new_name] = data_
@@ -4149,7 +4150,10 @@ class LINEYKA_sound_to_animatic(bpy.types.Operator):
 					sequences[seq.name]['animation_offset_start'] = seq.animation_offset_start
 					sequences[seq.name]['animation_offset_end'] = seq.animation_offset_end
 					sequences[seq.name]['frame_offset_end'] = seq.frame_offset_end
-					sequences[seq.name]['filepath'] = seq.filepath
+					if 'filepath' in seq:
+						sequences[seq.name]['filepath'] = seq.filepath
+					else:
+						sequences[seq.name]['filepath'] = seq.sound.filepath
 				else:
 					continue
 		print(sequences)
@@ -4181,7 +4185,10 @@ class LINEYKA_sound_to_animatic(bpy.types.Operator):
 				sound_track = animatic_scene.sequence_editor.sequences.new_sound(name, filepath, channel, frame_start)
 			else:
 				sound_track = animatic_scene.sequence_editor.sequences[name]
-				sound_track.filepath = filepath
+				if 'filepath' in sound_track:
+					sound_track.filepath = filepath
+				else:
+					sound_track.sound.filepath = filepath
 				sound_track.frame_start = frame_start
 				
 			# -- edit sound track
