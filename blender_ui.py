@@ -3685,7 +3685,7 @@ class LINEYKA_add_shot(bpy.types.Operator):
 		if not context.scene.sequence_editor:
 			context.scene.sequence_editor_create()
 		sequences = context.scene.sequence_editor.sequences_all
-		min_num = 0
+		min_num = 1
 		for marker in sequences:
 			try:
 				num = int(marker.name.split('.')[1])
@@ -3698,7 +3698,15 @@ class LINEYKA_add_shot(bpy.types.Operator):
 				min_num = min_num + 1
 					
 		name_ = '0'*(3 - len(str(min_num))) + str(min_num)
-		G.shot_name = 'Shot.' + name_
+		#get group name
+		group_name = 'sz'
+		group_id = G.all_assets_data_by_name[G.current_task['asset']]['group']
+		res, row = G.db_group.get_by_id(G.current_project, group_id)
+		if not res:
+			return False
+		else:
+			group_name = row['name']
+		G.shot_name = '%s_%s_Shot.%s' % (group_name, G.current_task['asset'], name_)
 		
 		self.lenth_frame = G.lenth
 		self.shot_name = G.shot_name
