@@ -1495,8 +1495,8 @@ class FUNCTIONAL_playblast(bpy.types.Panel):
 	
 	@classmethod
 	def poll(self, context):
-		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim']
-		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim']
+		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim', 'render']
+		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['animation_shot', 'simulation_din', 'tech_anim', 'render']
 		
 		if BOOL_work or BOOL_read:
 			return True
