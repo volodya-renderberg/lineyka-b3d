@@ -3345,9 +3345,9 @@ class functional:
 					if not key in jsn:
 						jsn[key] = location_content[key]
 						
-		print('*** ', location_asset_path)
-		print('*** ', data_path)
-		print('*** ', json.dumps(location_content, sort_keys = 1, indent = 4))
+		#print('*** ', location_asset_path)
+		#print('*** ', data_path)
+		#print('*** ', json.dumps(location_content, sort_keys = 1, indent = 4))
 			
 		char_list = {}
 		obj_list = {}
