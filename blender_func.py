@@ -3901,8 +3901,11 @@ class functional:
 	def open_images(self, context, application, filepath):
 		
 		#cmd = application +  ' \"' + filepath + '\"'
-		cmd = 'start %s \"%s\"' % (application, filepath)
-		os.system(cmd)
+		#cmd = 'start %s \"%s\"' % (application, filepath)
+		#os.system(cmd)
+		
+		cmd = '%s \"%s\"' % (application, filepath)
+		subprocess.Popen(cmd, shell = True)
 		
 		return(True, 'Ok!')
 	
