@@ -639,8 +639,10 @@ class functional:
 			os.system(cmd)
 		
 		#cmd = 'python \"' + file_path + '\"'
-		cmd = 'start python \"%s\"' % file_path
-		os.system(cmd)
+		#cmd = 'start python \"%s\"' % file_path
+		#os.system(cmd)
+		cmd = 'python \"%s\"' % file_path
+		subprocess.Popen(cmd, shell = True)
 			
 		return(True, 'Ok!')
 		
