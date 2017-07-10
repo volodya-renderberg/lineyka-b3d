@@ -1583,11 +1583,16 @@ class FUNCTIONAL_animation_shot(bpy.types.Panel):
 					col = col_char.column(align = True)
 					col.label(G.current_content_data[key][0]['name'])
 					row = col.row(align = True)
+					#link
 					if G.current_content_data[key][0]['name'] in group_list:
 						row.operator("lineyka.location_add_copy", icon = 'NONE').current_data = json.dumps(G.current_content_data[key])
 					else:
-						row.operator("lineyka.location_add_copy", icon = 'NONE', text = 'Add new').current_data = json.dumps(G.current_content_data[key])
-					
+						row.operator("lineyka.location_add_copy", icon = 'NONE', text = 'Link new').current_data = json.dumps(G.current_content_data[key])
+					#append
+					if G.current_content_data[key][0]['name'] in group_list:
+						row.operator("lineyka.location_app_copy", icon = 'NONE').current_data = json.dumps(G.current_content_data[key])
+					else:
+						row.operator("lineyka.location_app_copy", icon = 'NONE', text = 'Add new').current_data = json.dumps(G.current_content_data[key])
 					# remove button
 					row.operator("lineyka.location_select_all_copies", text = 'select all').current_data = json.dumps(G.current_content_data[key])
 					row.operator("lineyka.library_preview_image", icon = 'NONE').asset_name = G.current_content_data[key][0]['name']
@@ -1601,11 +1606,16 @@ class FUNCTIONAL_animation_shot(bpy.types.Panel):
 					col = col_obj.column(align = True)
 					col.label(G.current_content_data[key][0]['name'])
 					row = col.row(align = True)
+					#link
 					if G.current_content_data[key][0]['name'] in bpy.data.objects.keys():
 						row.operator("lineyka.location_add_copy", icon = 'NONE').current_data = json.dumps(G.current_content_data[key])
 					else:
-						row.operator("lineyka.location_add_copy", icon = 'NONE', text = 'Add new').current_data = json.dumps(G.current_content_data[key])
-					
+						row.operator("lineyka.location_add_copy", icon = 'NONE', text = 'Link new').current_data = json.dumps(G.current_content_data[key])
+					#append
+					if G.current_content_data[key][0]['name'] in bpy.data.objects.keys():
+						row.operator("lineyka.location_app_copy", icon = 'NONE').current_data = json.dumps(G.current_content_data[key])
+					else:
+						row.operator("lineyka.location_app_copy", icon = 'NONE', text = 'Add new').current_data = json.dumps(G.current_content_data[key])
 					# remove button
 					row.operator("lineyka.location_select_all_copies", text = 'select all').current_data = json.dumps(G.current_content_data[key])
 					row.operator("lineyka.library_preview_image", icon = 'NONE').asset_name = G.current_content_data[key][0]['name']
@@ -3334,13 +3344,28 @@ class LINEYKA_location_select_all_copies(bpy.types.Operator):
 
 class LINEYKA_location_add_copy(bpy.types.Operator):
 	bl_idname = "lineyka.location_add_copy"
-	bl_label = "Add Copy"
+	bl_label = "Link Copy"
 	
 	current_data = bpy.props.StringProperty()
 
 	def execute(self, context):
 		current_data = json.loads(self.current_data)
 		result = G.func.location_add_copy(context, G.current_project, current_data, G.current_task, G)
+		if result[0]:
+			self.report({'INFO'}, ('*** load ' + current_data[0]['name']))
+		else:
+			self.report({'WARNING'}, result[1])
+		return{'FINISHED'}
+
+class LINEYKA_location_app_copy(bpy.types.Operator):
+	bl_idname = "lineyka.location_app_copy"
+	bl_label = "Add Copy"
+	
+	current_data = bpy.props.StringProperty()
+
+	def execute(self, context):
+		current_data = json.loads(self.current_data)
+		result = G.func.location_add_copy(context, G.current_project, current_data, G.current_task, G, link=False)
 		if result[0]:
 			self.report({'INFO'}, ('*** load ' + current_data[0]['name']))
 		else:
@@ -5781,6 +5806,7 @@ def register():
 	# bpy.utils.register_class(LINEYKA_location_load_content)
 	bpy.utils.register_class(LINEYKA_location_select_all_copies)
 	bpy.utils.register_class(LINEYKA_location_add_copy)
+	bpy.utils.register_class(LINEYKA_location_app_copy)
 	bpy.utils.register_class(LINEYKA_location_add_copy_sel)
 	bpy.utils.register_class(LINEYKA_location_add_copy_of_char)
 	bpy.utils.register_class(LINEYKA_location_remove_content)
@@ -5948,6 +5974,7 @@ def unregister():
 	# bpy.utils.unregister_class (LINEYKA_location_load_content)
 	bpy.utils.unregister_class(LINEYKA_location_select_all_copies)
 	bpy.utils.unregister_class(LINEYKA_location_add_copy)
+	bpy.utils.unregister_class(LINEYKA_location_app_copy)
 	bpy.utils.unregister_class(LINEYKA_location_add_copy_sel)
 	bpy.utils.unregister_class(LINEYKA_location_add_copy_of_char)
 	bpy.utils.unregister_class(LINEYKA_location_remove_content)

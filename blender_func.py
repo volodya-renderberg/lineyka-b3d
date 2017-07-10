@@ -976,7 +976,9 @@ class functional:
 	'''
 	### ********* ADD COPY CONTENT --------------------------------------------------
 	
-	def location_add_copy(self, context, project_name, c_data, task_data, Global):
+	def location_add_copy(self, context, project_name, c_data, task_data, Global, link = True):
+		#
+		G.link = link
 		#print('Epte!!!')
 		result = None
 		if c_data[1]['asset_type'] == 'obj':
@@ -1013,7 +1015,8 @@ class functional:
 				
 			#  -- -- link
 			dir_ = os.path.join(file_path, 'Mesh')
-			bpy.ops.wm.link(directory= dir_, filename = asset_name, link = True)
+			bpy.ops.wm.link(directory= dir_, filename = asset_name, link = G.link)
+			
 		# get mesh
 		try:
 			mesh = bpy.data.meshes[asset_name]
@@ -1121,7 +1124,7 @@ class functional:
 			print(file_path)
 			return(False, 'Publish/File Not Found!')
 				
-		with bpy.data.libraries.load(file_path, link=True) as (data_src, data_dst):
+		with bpy.data.libraries.load(file_path, link = G.link) as (data_src, data_dst):
 		#with bpy.data.libraries.load(file_path, link=False) as (data_src, data_dst):
 			#groups_list = []
 			texts_list = []
@@ -1139,10 +1142,18 @@ class functional:
 			
 		scene = context.scene
 		for group in data_dst.groups:
-			ob = bpy.data.objects.new(group.name, None)
-			ob.dupli_group = group
-			ob.dupli_type = 'GROUP'
-			scene.objects.link(ob)
+			if G.link:
+				ob = bpy.data.objects.new(group.name, None)
+				ob.dupli_group = group
+				ob.dupli_type = 'GROUP'
+				scene.objects.link(ob)
+			else:
+				ob = bpy.data.objects.new(group.name, None)
+				scene.objects.link(ob)
+				for obj in group.objects:
+					obj.parent = ob
+					scene.objects.link(obj)
+		
 		
 		return(True, 'ok!')
 	
