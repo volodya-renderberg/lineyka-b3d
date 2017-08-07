@@ -3146,14 +3146,29 @@ class LINEYKA_load_sketch(bpy.types.Operator):
 			else:
 				img = bpy.data.images[G.bg_image_name]
 				img.filepath = img_path
-			
+				
+			outliner_area = None
+			up = None
 			for area in bpy.context.screen.areas:
 				if area.type == 'VIEW_3D':
 					space_data = area.spaces.active
 					space_data.show_background_images = True
 					bg = space_data.background_images.new()
 					bg.image = img
-					break
+					
+				if area.type == 'OUTLINER':
+					outliner_area = area
+					
+				if area.type == 'IMAGE_EDITOR':
+					space_data = area.spaces.active
+					space_data.image = img
+					up = True
+					
+			if not up and outliner_area:
+				outliner_area.type = 'IMAGE_EDITOR'
+				space_data = outliner_area.spaces.active
+				space_data.image = img
+
 		return{'FINISHED'}
 		
 class LINEYKA_library_preview_image(bpy.types.Operator):
