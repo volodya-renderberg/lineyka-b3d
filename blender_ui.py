@@ -3190,18 +3190,16 @@ class LINEYKA_library_preview_image(bpy.types.Operator):
 			if not G.preview_img_name in bpy.data.images.keys():
 				G.preview_img = bpy.data.images.load(img_path)
 				G.preview_img.name = G.preview_img_name
-				'''
-				for area in bpy.context.screen.areas:
-					if area.type == 'VIEW_3D':
-						space_data = area.spaces.active
-						space_data.show_background_images = True
-						bg = space_data.background_images.new()
-						bg.image = G.preview_img
-						break
-				'''
 			else:
 				G.preview_img = bpy.data.images[G.preview_img_name]
 				G.preview_img.filepath = img_path
+			
+			for area in bpy.context.screen.areas:
+				if area.type == 'IMAGE_EDITOR':
+					space_data = area.spaces.active
+					space_data.image = G.preview_img
+					break
+			
 		return{'FINISHED'}
 		
 class LINEYKA_library_load_asset(bpy.types.Operator):
