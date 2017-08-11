@@ -603,15 +603,22 @@ class functional:
 		
 	### ********* MODEL PANEL ******************************
 	def model_rename_by_asset(self, context, current_task):
-		this_mesh = bpy.context.object.data
+		this_ob = bpy.context.object
+		this_mesh = this_ob.data
 		
 		ls = bpy.data.meshes
 		for mesh in ls:
 			if mesh.name == current_task['asset']:
 				mesh.name = 'old_' + current_task['asset']
 				break
+		ls = bpy.data.objects
+		for ob in ls:
+			if ob.name == current_task['asset']:
+				ob.name = 'old_' + current_task['asset']
+				break
 		
 		this_mesh.name = current_task['asset']
+		this_ob.name = current_task['asset']
 		
 		return(True, 'Ok')
 	
