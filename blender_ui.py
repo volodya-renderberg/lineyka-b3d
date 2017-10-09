@@ -692,7 +692,7 @@ class FUNCTIONAL_tasks_sequence_editor(bpy.types.Panel):
 		col_open.operator("lineyka.open", icon = 'NONE', text = 'Open From Input').action = 'from_input'
 		
 class FUNCTIONAL_load_open_panel(bpy.types.Panel):
-	bl_label = 'Lineyka /// Load or Open Source:'
+	bl_label = 'Lineyka /// Load or Open from Source:'
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "TOOLS"
 	bl_category = 'Lineyka'
