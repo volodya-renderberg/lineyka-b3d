@@ -347,7 +347,9 @@ class functional:
 			
 			if task_data['activity'] == 'model':
 				for ob in bpy.data.objects:
-					ob.name = ob.name.replace('.','_')
+					#print(ob.name)
+					new_name = ob.name.replace('.','_')
+					ob.name = new_name
 			
 		# -- save to tmp 
 		bpy.ops.wm.save_as_mainfile(filepath = save_tmp_path, check_existing = True)
@@ -378,6 +380,8 @@ class functional:
 		result = self.db_log.notes_log(project, logs_keys, task_data['asset_id'])
 		if not result[0]:
 			return(False, result[1])
+		
+		print('3'*20)
 			
 		### ****** POST PUSH ****** by ASSET_TYPE ******
 		if task_data['asset_type'] == 'location':

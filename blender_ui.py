@@ -245,6 +245,9 @@ class G(object):
 		
 
 # ********** drop-down menu
+def set_fields():
+	bpy.types.Scene.lineyka_filter_by_name = bpy.props.StringProperty(name = 'Filter', update = None)
+	
 def set_activity_list():
 	bpy.types.Scene.activity_enum = bpy.props.EnumProperty(items = [('--select activity--',)*3, ('model',)*3, ('rig',)*3], name = 'Activity', update = None)
 	
@@ -717,17 +720,21 @@ class FUNCTIONAL_load_open_panel(bpy.types.Panel):
 		row.operator("lineyka.help", icon = 'QUESTION').action = 'load_or_open_source_panel'
 		
 		#layout.prop(context.scene, "my_enum")
-		
+		layout.prop(context.scene, "lineyka_filter_by_name")
 		layout.operator('lineyka.load_group_list')
 		
 		col = layout.column(align = True)
 		
 		if G.load_or_open_panel_group_list_vis:
 			for group in G.group_data_list:
-				row = col.row(align = True)
-				row.label(group['name'])
-				row.label('(' + group['type'] + ')')
-				row.operator('lineyka.load_content_list_of_group').group_data = json.dumps(dict(group))
+				if context.scene.lineyka_filter_by_name \
+					and (not context.scene.lineyka_filter_by_name.lower() in group['name'].lower()):
+					continue
+				else:
+					row = col.row(align = True)
+					row.label(group['name'])
+					row.label('(' + group['type'] + ')')
+					row.operator('lineyka.load_content_list_of_group').group_data = json.dumps(dict(group))
 				
 		if G.load_or_open_panel_content_list_vis:
 			col.label(('Asset list of group: ' + G.load_or_open_panel_current_group['name'] + \
@@ -736,11 +743,15 @@ class FUNCTIONAL_load_open_panel(bpy.types.Panel):
 				col.prop(context.scene, "activity_enum")
 			col.label('__________')
 			for task in G.load_or_open_panel_content_list_of_group:
-				row = col.row(align = True)
-				row.label(task['asset'])
-				row.operator("lineyka.library_preview_image", icon = 'NONE').asset_name = task['asset']
-				row.operator('lineyka.load_source_file', icon = 'NONE').task_data = json.dumps(dict(task))
-				row.operator('lineyka.open_source_file', icon = 'NONE').task_data = json.dumps(dict(task))
+				if context.scene.lineyka_filter_by_name \
+					and (not context.scene.lineyka_filter_by_name.lower() in task['asset'].lower()):
+					continue
+				else:
+					row = col.row(align = True)
+					row.label(task['asset'])
+					row.operator("lineyka.library_preview_image", icon = 'NONE').asset_name = task['asset']
+					row.operator('lineyka.load_source_file', icon = 'NONE').task_data = json.dumps(dict(task))
+					row.operator('lineyka.open_source_file', icon = 'NONE').task_data = json.dumps(dict(task))
 			
 		
 		'''
@@ -5932,6 +5943,7 @@ def register():
 	bpy.utils.register_class(LINEYKA_open_images)
 	
 	# drop-down menu
+	set_fields()
 	set_activity_list()
 	set_group_list()
 	set_set_of_tasks_list()
