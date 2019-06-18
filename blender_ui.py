@@ -3010,7 +3010,7 @@ def get_versions_list():
 		
 class LINEYKA_tz(bpy.types.Operator):
 	bl_idname = "lineyka.tz"
-	bl_label = "TZ"
+	bl_label = "Specification"
 	
 	def execute(self, context):
 		if G.current_task['tz']:
