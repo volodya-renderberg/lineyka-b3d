@@ -1581,12 +1581,15 @@ class functional:
 				pass
 		else:
 			text = bpy.data.texts.new(G.name_text)
-		
+			
 		result = self.db_task.get_list_by_type(project_name, 'shot_animation')
 		if result[0]:
 			for row in result[1]:
 				if row['name'] in sequences.keys():
 					shot_data[row['name']] = dict(row)
+					#
+					if data and data['shot_data'].get(row['name']):
+						shot_data[row['name']]['old_sequence_data'] = data['shot_data'][row['name']]['old_sequence_data']
 		
 		data['shot_data'] = shot_data
 		text.clear()
@@ -1650,7 +1653,10 @@ class functional:
 	def edit_scene_data(self, context):
 		# edit scene data
 		context.scene.render.display_mode = 'WINDOW'
-		context.scene.render.image_settings.file_format = 'H264'
+		try:
+			context.scene.render.image_settings.file_format = 'H264'
+		except:
+			context.scene.render.image_settings.file_format = 'FFMPEG'
 		context.scene.render.image_settings.color_mode = 'RGB'
 		context.scene.render.ffmpeg.format = 'AVI'
 		context.scene.render.ffmpeg.codec = 'H264'
@@ -1828,6 +1834,9 @@ class functional:
 			shot_data = text_data['shot_data']
 		else:
 			shot_data = {}
+			
+		print('shot_data:')
+		print(shot_data)
 		
 		# get selected sequence
 		if not context.scene.sequence_editor:
@@ -1836,6 +1845,8 @@ class functional:
 		seq = context.scene.sequence_editor.active_strip
 		if not seq:
 			return(False, 'No Active Sequence!')
+		
+		print(seq.type, seq.name)
 		
 		# tests
 		if seq.type == 'SCENE':
@@ -1907,6 +1918,7 @@ class functional:
 		
 		# -- get animatic_path
 		animatic_path = os.path.normpath(os.path.join(asset_path, self.db_task.activity_folder['film']['animatic'], (task_data['asset'] + '.avi')))
+		print('animatic: %s' % animatic_path)
 		
 		if os.path.exists(animatic_path):
 			if not scene.sequence_editor:
@@ -2304,7 +2316,10 @@ class functional:
 		save_path = result[1][1]
 		
 		# set render options
-		context.scene.render.image_settings.file_format = 'H264'
+		try:
+			context.scene.render.image_settings.file_format = 'H264'
+		except:
+			context.scene.render.image_settings.file_format = 'FFMPEG'
 		context.scene.render.image_settings.color_mode = 'RGB'
 		context.scene.render.ffmpeg.format = 'AVI'
 		context.scene.render.ffmpeg.codec = 'H264'

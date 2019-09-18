@@ -2274,7 +2274,7 @@ class LINEYKA_help(bpy.types.Operator):
 	def execute(self, context):
 		print('***** help')
 		if self.action == 'manual':
-			webbrowser.open_new_tab('https://sites.google.com/site/lineykamanual/home/blender_addon_for_artist_rus')
+			webbrowser.open_new_tab('http://www.lineyka.org.ru/support')
 		# PANELS
 		elif self.action == 'animatic_panel':
 			webbrowser.open_new_tab('https://www.youtube.com/watch?v=rg377rzHiJA&list=PLaF5hl1yUd9Vh73dKS2hFhKydrJioejWJ')
@@ -4468,7 +4468,10 @@ class LINEYKA_render_animatic_shots(bpy.types.Operator):
 		
 	def edit_scene_data(self, context):
 		# edit scene data
-		context.scene.render.image_settings.file_format = 'H264'
+		try:
+			context.scene.render.image_settings.file_format = 'H264'
+		except:
+			context.scene.render.image_settings.file_format = 'FFMPEG'
 		context.scene.render.image_settings.color_mode = 'RGB'
 		context.scene.render.ffmpeg.format = 'AVI'
 		context.scene.render.ffmpeg.codec = 'H264'
