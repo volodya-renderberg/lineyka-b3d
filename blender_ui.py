@@ -1012,8 +1012,8 @@ class FUNCTIONAL_textures(bpy.types.Panel):
 	    
 	@classmethod
 	def poll(self, context):
-		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['model', 'textures',]
-		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['model', 'textures',]
+		BOOL_work = G.functional_panel and G.current_task['task_type'] in ['model', 'textures', 'rig']
+		BOOL_read = G.read_func_panel and G.current_task['task_type'] in ['model', 'textures', 'rig']
 		
 		if BOOL_work:
 			return True
