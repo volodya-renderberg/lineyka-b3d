@@ -704,7 +704,7 @@ class FUNCTIONAL_load_open_panel(bpy.types.Panel):
 	@classmethod
 	def poll(self, context):
 		if G.current_project and G.current_task:
-			if G.current_task['asset_type'] in ['char', 'obj']:
+			if G.current_task['asset_type'] in ['char', 'obj', 'shot_animation']:
 				return(True)
 			else:
 				return(False)
